@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from database.schemas import init_models
 
 from users.auth import router as user_router
+from events.route import router as event_router
 
 
 @asynccontextmanager
@@ -45,6 +46,7 @@ app.add_middleware(
 )
 
 app.include_router(user_router)
+app.include_router(event_router)
 
 
 @app.exception_handler(HTTPException)

@@ -1,6 +1,7 @@
 from database.my_engine import get_db
-from fastapi import APIRouter, Depends, Request, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from database.schemas import UserInfo
 import users.model as user_model
 import users.functions as auth_func
 from users.functions import get_current_user
@@ -44,6 +45,19 @@ async def logout_user(
 ):
     response.delete_cookie('access_token')
     response.delete_cookie('refresh_token')
+
+
+@router.post(
+    '/create_org',
+    status_code=status.HTTP_201_CREATED,
+    summary="Создание организатора"
+)
+async def create_org(
+    user_model: user_model.OrganizeModel,
+    session: AsyncSession = Depends(get_db),
+    user: UserInfo = Depends(get_current_user)
+):
+    return await auth_func.create_org(session, user_model, user)
 
 
 # @router.get(

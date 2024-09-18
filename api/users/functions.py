@@ -1,5 +1,5 @@
 import users.model as user_model
-from users.dao import UsersDAO, UsersDAOInfo
+from users.dao import UsersDAO, UsersDAOInfo, OrganizeInfoDAO
 from fastapi import HTTPException
 from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -59,17 +59,24 @@ def create_token(data: dict):
     return encoded_jwt
 
 
-def update_token(user_id, login, response: Response):
+def update_token(
+    user_id: int,
+    login: str,
+    response: Response,
+    is_organizer: bool,
+    is_department: bool,
+):
     """
     Создание/обновление access и refresh токенов и запихивание их в куки
     """
-    access_token = create_token(
-        {
-            "sub": user_id,
-            "login": login,
-            "type": "access"
-        }
-    )
+    token_dict = {
+        "sub": user_id,
+        "login": login,
+        "is_organizer": is_organizer,
+        "is_department": is_department,
+    }
+    token_dict['type'] = "access"
+    access_token = create_token(token_dict)
     expire_access = datetime.now(timezone(timedelta(hours=3)).utc) + timedelta(
         minutes=10
     )
@@ -79,14 +86,8 @@ def update_token(user_id, login, response: Response):
         expires=expire_access,
         httponly=True,
     )
-
-    refresh_token = create_token(
-        {
-            "sub": user_id,
-            "login": login,
-            "type": "refresh"
-        }
-    )
+    token_dict['type'] = "refresh"
+    refresh_token = create_token(token_dict)
     expire_refresh = datetime.now(timezone(timedelta(hours=3)).utc) + timedelta(days=30)
     response.set_cookie(
         "refresh_token",
@@ -126,6 +127,8 @@ async def login_user(
         user_id=str(user_info.id),
         login=user_info.login,
         response=response,
+        is_organizer=user_info.is_organizer,
+        is_department=user_info.is_department,
     )
     return user_model.UserInfo.model_validate(user_info)
 
@@ -149,7 +152,9 @@ def get_token(request: Request, response: Response):
         access_token = update_token(
             user_id=payload.get("sub"),
             login=payload.get("login"),
-            response=response
+            response=response,
+            is_organizer=payload.get("is_organizer"),
+            is_department=payload.get("is_department"),
         )
 
     return access_token
@@ -173,5 +178,40 @@ async def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="не тот токен",
         )
-    user = user_model.GetUser(id=payload.get("sub"), login=payload.get("login"))
+    user = user_model.GetUser(
+        id=payload.get("sub"),
+        login=payload.get("login"),
+        is_organizer=payload.get("is_organizer"),
+        is_department=payload.get("is_department"),
+    )
     return user
+
+
+async def create_org(
+    session: AsyncSession,
+    organaze_model: user_model.OrganizeModel,
+    user: UserInfo
+):
+    if not user.is_department:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="access denied",
+        )
+    org_check = await OrganizeInfoDAO.find_one_or_none(
+        session=session,
+        filters={"user_id": organaze_model.user_id}
+    )
+    if org_check:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="this user already organizer"
+        )
+    await OrganizeInfoDAO.insert_data(
+        session,
+        organaze_model.model_dump()     
+    )
+    await UsersDAOInfo.update_data(
+        session=session,
+        values={"is_organizer": True},
+        filters={"id": organaze_model.user_id}
+    )

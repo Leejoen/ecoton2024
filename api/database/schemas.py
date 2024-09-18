@@ -44,6 +44,7 @@ class UserInfo(Base):
     second_name = Column(VARCHAR(100), nullable=False)
     last_name = Column(VARCHAR(100), nullable=True)
     is_organizer = Column(BOOLEAN(), nullable=False, server_default='0')
+    is_department = Column(BOOLEAN(), nullable=False, server_default='0')
     is_active = Column(BOOLEAN(), nullable=False, server_default='0')
 
     user: Mapped[User] = relationship(
@@ -55,9 +56,15 @@ class UserInfo(Base):
 class OrganizerInfo(Base):
     __tablename__ = "organizer_info"
 
-    user_id = Column(ForeignKey(UserInfo.id), nullable=True)
-    other_info = Column(VARCHAR(255), nullable=False)
-
+    id = Column(INTEGER(), primary_key=True)
+    user_id = Column(ForeignKey(UserInfo.id), nullable=False)
+    full_name = Column(VARCHAR(255), nullable=False)
+    ogrn = Column(VARCHAR(255), nullable=False)
+    ogrn_date = Column(DATE(), nullable=False)
+    address = Column(VARCHAR(255), nullable=False)
+    format = Column(VARCHAR(255), nullable=False)
+    region = Column(VARCHAR(255), nullable=False)
+    status = Column(VARCHAR(255), nullable=False)
 
 
 class MetroLine(Base):
@@ -97,7 +104,10 @@ class EcoEvent(Base):
     date_start = Column(TIMESTAMP(), nullable=False)
     place = Column(VARCHAR(255), nullable=False)
     metro_station_id = Column(ForeignKey(MetroStation.id), nullable=True)
+    organize_id = Column(ForeignKey(OrganizerInfo.id), nullable=False)
 
+    organize_info: Mapped[OrganizerInfo] = relationship()
+    metro_info: Mapped[MetroStation] = relationship()
 
 
 

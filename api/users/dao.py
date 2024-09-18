@@ -1,5 +1,5 @@
 from dao.base import BaseDAO
-from database.schemas import User, UserInfo
+from database.schemas import User, UserInfo, OrganizerInfo
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, insert
 
@@ -25,3 +25,7 @@ class UsersDAO(BaseDAO):
 
 class UsersDAOInfo(BaseDAO):
     schema = UserInfo
+
+
+class OrganizeInfoDAO(BaseDAO):
+    schema = OrganizerInfo
