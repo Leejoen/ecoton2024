@@ -46,11 +46,11 @@ async def logout_user(
     response.delete_cookie('refresh_token')
 
 
-@router.get(
-    "/check_user",
-    status_code=status.HTTP_200_OK
-)
-async def check_user(
-    user: user_model.UserInfo = Depends(get_current_user)
-):
-    return await auth_func.check_user()
+# @router.get(
+#     "/check_user",
+#     status_code=status.HTTP_200_OK
+# )
+# async def check_user(
+#     user: user_model.UserInfo = Depends(get_current_user)
+# ):
+#     return await auth_func.check_user()
