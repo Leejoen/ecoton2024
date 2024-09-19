@@ -57,5 +57,30 @@
 **Пароль:** ...
 
 ---
----
----
+## Запуск API
+Для запуска API нужно создать файл settings.toml с ключами
+
+Лежать он должен в папке api
+
+```
+[API]
+host = "127.0.0.1"
+port = 5010
+debug = false
+
+[MYSQL]
+host = "localhost"
+user = "your_user"
+password =  "db_pass"
+database = "your_db"
+
+[JWT]
+secret = "your_secret"
+alg = "HS256"
+
+[MAIL]
+smtp_server = "your_server"
+smtp_port = port
+login = "your_mail"
+password = "your_pass"
+```
