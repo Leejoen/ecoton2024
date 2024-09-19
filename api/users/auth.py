@@ -1,6 +1,7 @@
 from database.my_engine import get_db
-from fastapi import APIRouter, Depends, Request, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from database.schemas import UserInfo
 import users.model as user_model
 import users.functions as auth_func
 from users.functions import get_current_user
@@ -46,11 +47,26 @@ async def logout_user(
     response.delete_cookie('refresh_token')
 
 
-@router.get(
-    "/check_user",
-    status_code=status.HTTP_200_OK
+@router.post(
+    '/create_org',
+    status_code=status.HTTP_201_CREATED,
+    summary="Создание организатора"
 )
-async def check_user(
-    user: user_model.UserInfo = Depends(get_current_user)
+async def create_org(
+    user_model: user_model.OrganizeModel,
+    session: AsyncSession = Depends(get_db),
+    user: UserInfo = Depends(get_current_user)
 ):
-    return await auth_func.check_user()
+    return await auth_func.create_org(session, user_model, user)
+
+
+@router.get(
+    '/email_activate/{verify_token}',
+    status_code=status.HTTP_200_OK,
+    summary="Подтверждение почты пользователя"
+)
+async def email_activate(
+    verify_token,
+    session: AsyncSession = Depends(get_db),
+):
+    return await auth_func.email_activate(session, verify_token)
