@@ -22,6 +22,8 @@ class User(Base):
     login = Column(VARCHAR(50), primary_key=True)
     password = Column(VARCHAR(255), nullable=False)
     date_create = Column(TIMESTAMP(timezone=True), server_default=func.now())
+    verify_token = Column(VARCHAR(255), nullable=False)
+    is_active = Column(BOOLEAN(), nullable=False, server_default='0')
 
     user_addition: Mapped[UserInfo] = relationship(
         back_populates='user',
@@ -45,7 +47,6 @@ class UserInfo(Base):
     last_name = Column(VARCHAR(100), nullable=True)
     is_organizer = Column(BOOLEAN(), nullable=False, server_default='0')
     is_department = Column(BOOLEAN(), nullable=False, server_default='0')
-    is_active = Column(BOOLEAN(), nullable=False, server_default='0')
 
     user: Mapped[User] = relationship(
         back_populates='user_addition',
@@ -57,7 +58,13 @@ class OrganizerInfo(Base):
     __tablename__ = "organizer_info"
 
     id = Column(INTEGER(), primary_key=True)
-    user_id = Column(ForeignKey(UserInfo.id), nullable=False)
+    user_id = Column(
+        ForeignKey(
+            UserInfo.id,
+            ondelete='cascade'
+        ),
+        nullable=False
+    )
     full_name = Column(VARCHAR(255), nullable=False)
     ogrn = Column(VARCHAR(255), nullable=False)
     ogrn_date = Column(DATE(), nullable=False)

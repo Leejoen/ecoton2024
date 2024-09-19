@@ -60,11 +60,13 @@ async def create_org(
     return await auth_func.create_org(session, user_model, user)
 
 
-# @router.get(
-#     "/check_user",
-#     status_code=status.HTTP_200_OK
-# )
-# async def check_user(
-#     user: user_model.UserInfo = Depends(get_current_user)
-# ):
-#     return await auth_func.check_user()
+@router.get(
+    '/email_activate/{verify_token}',
+    status_code=status.HTTP_200_OK,
+    summary="Подтверждение почты пользователя"
+)
+async def email_activate(
+    verify_token,
+    session: AsyncSession = Depends(get_db),
+):
+    return await auth_func.email_activate(session, verify_token)
