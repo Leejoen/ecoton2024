@@ -53,9 +53,9 @@ body{
     align-items: flex-end;
     margin-top: 5%;
     /* background-color: #e2e8f0; */
-    background-color: rgb(110, 215, 152);    ;
+    background-color: rgb(110, 215, 152);
     border-top-left-radius: 20px;
-    box-shadow: 0px 5px 0px 0px rgba(0, 0, 0, 0.5);
+    box-shadow: 5px 0px 5px 2px rgba(0, 0, 0, 0.5);
 
 }
 
@@ -255,8 +255,9 @@ a{
     height: 100%;
     
     box-shadow: 2px 0px 1px 0px rgba(0, 0, 0, 0.5);
-    border-radius: 20px;
     padding: 5px;
+    border-top-right-radius: 20px;
+    background-color: rgb(110, 215, 152);
 
 }
 
@@ -274,6 +275,7 @@ a{
 .image_for_rating{
     height: 40px;
     width: 40px;
+    border-radius: 50%;
 }
 
 .mero_rating_main{
@@ -299,6 +301,7 @@ a{
     align-items: center;
     justify-content: flex-start;
     flex-direction: row;
+    border-bottom: 1px solid rgb(112, 90, 64);
 }
 
 .naming{
@@ -319,6 +322,7 @@ a{
     height: 80%;
     display: flex;
     flex-direction: column;
+    margin-top: 40px;
 }
 
 .mero_main_row{
@@ -413,4 +417,41 @@ a{
 .date {
     color: #f5f5f5;
     margin-right: 15px;
+}
+
+.mero_mero_name{
+    text-align: center;
+}
+
+.mero_mero_main{
+    width: 100%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+}
+
+.mero_temp_imgs{
+    width: 700px;
+    height: 500px;
+    opacity: 0.9;
+    background-image: url("images/2024_0918_17100200.jpg");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.mero_temp_main{
+    width: 100%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.filter{
+    margin-left:50px;
+    margin-top:30px;
+}
+
+.text_mero{
+    margin:80px;
 }
