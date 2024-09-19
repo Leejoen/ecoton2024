@@ -60,7 +60,7 @@ async def register_user(user_data: user_model.UserResgisetr, session: AsyncSessi
         data=user_dict,
         session=session,
     )
-    # отправляем ему письмо с уникаольной ссылкой
+    # отправляем ему письмо с уникальной ссылкой
     active_url = f'https://postum.su/email_activate/{verify_token}'
     mail_template = get_mail_template(active_url)
     send_email(
@@ -203,6 +203,11 @@ async def create_org(
     organaze_model: user_model.OrganizeModel,
     user: UserInfo
 ):
+    """
+    Создать организатора
+    Доступно для сотрудников департамента (модеров)
+
+    """
     if not user.is_department:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -212,11 +217,15 @@ async def create_org(
         session=session,
         filters={"user_id": organaze_model.user_id}
     )
+    # проверим, не является ли юзер уже организатором
+    # у нас пока один пользователь - может быть одной организацией 
     if org_check:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="this user already organizer"
         )
+    # если все ок, то создаем организацию
+    # и даем права орга юзеру 
     await OrganizeInfoDAO.insert_data(
         session,
         organaze_model.model_dump()     

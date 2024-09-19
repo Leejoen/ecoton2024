@@ -12,6 +12,9 @@ async def create_event(
     model: event_model.CreateEvent,
     user: UserInfo,
 ):
+    """
+    Создать мероприятие (доступно только организаторам)
+    """
     if not user.is_organizer:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -31,6 +34,9 @@ async def create_event(
 async def get_events(
     session: AsyncSession,
 ):
+    """
+    Получить список всех ивентов на главной странице
+    """
     events_query = await session.execute(
         select(EcoEvent).
         options(
