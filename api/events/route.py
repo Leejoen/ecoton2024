@@ -1,3 +1,4 @@
+from datetime import date
 from sqlalchemy import select
 from database.my_engine import get_db
 from fastapi import APIRouter, Depends, status
@@ -37,3 +38,17 @@ async def get_events(
     session: AsyncSession = Depends(get_db),
 ):
     return await event_func.get_events(session)
+
+
+@router.get(
+    '/get_excel',
+    status_code=status.HTTP_200_OK,
+    summary="Выгрузка отчета по событиям",
+)
+async def get_excel(
+    date_start: date,
+    date_end: date,
+    session: AsyncSession = Depends(get_db),
+    user: UserInfo = Depends(get_current_user),
+):
+    return await event_func.get_excel(session, user, date_start, date_end)

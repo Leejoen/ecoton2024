@@ -1,3 +1,4 @@
+from datetime import date
 from database.schemas import EcoEvent, UserInfo, MetroStation, OrganizerInfo
 from sqlalchemy import insert, update, delete, select, func, or_
 from sqlalchemy.orm import joinedload, load_only
@@ -58,3 +59,15 @@ async def get_events(
         event_obj = event_model.Event.model_validate(event)
         event_list.events.append(event_obj)
     return event_list
+
+
+async def get_excel(
+    session: AsyncSession,
+    user: UserInfo,
+    date_start: date,
+    date_end: date,
+):
+    """
+    Выгрузка отчета по мероприятиям
+    """
+    pass
